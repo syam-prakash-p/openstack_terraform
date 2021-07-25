@@ -33,3 +33,33 @@ resource "openstack_networking_subnet_v2" "provider_network_sub" {
   ip_version = 4
 }
 
+##################### internal network creation ###############
+resource "openstack_networking_network_v2" "internal_network_1" {
+  name           = var.network.internal_network_name
+  admin_state_up = "true"
+}
+
+resource "openstack_networking_subnet_v2" "subnet_2" {
+  name = var.network.int_subnet
+  network_id = "${openstack_networking_network_v2.internal_network_1.id}"
+  cidr       = var.network.internal_network_cidr
+  ip_version = 4
+}
+
+################### create router ######################
+resource "openstack_networking_router_v2" "router_1" {
+  name                = "router_001"
+  admin_state_up      = true
+  external_network_id = "${openstack_networking_network_v2.provider_network.id}"
+}
+
+resource "openstack_networking_router_interface_v2" "interface_1" {
+  router_id = "${openstack_networking_router_v2.router_1.id}"
+  subnet_id = "${openstack_networking_subnet_v2.provider_network_sub.id}"
+}
+
+resource "openstack_networking_router_route_v2" "router_route_1" {
+  router_id        = "${openstack_networking_router_v2.router_1.id}"
+  destination_cidr = var.network.internal_network_cidr
+  next_hop         = var.network.next_hop
+}

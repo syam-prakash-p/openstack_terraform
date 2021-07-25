@@ -19,6 +19,11 @@ variable "network" {
 	name = "public1"
 	subnet = "public1-subnet"
 	provider_cidr = "192.168.10.0/24"
+	internal_network_name = "interal-network"
+	int_subnet = "internal-subnet"
+	internal_network_cidr = "10.10.10.0/24"
+	next_hop = "192.168.10.249"
 	
 	}
 }
+
